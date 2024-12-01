@@ -18,7 +18,7 @@ defmodule Kanban.Board.Card do
   @doc false
   def changeset(card, attrs) do
     card
-    |> cast(attrs, [:title, :description])
-    |> validate_required([:title, :description])
+    |> cast(attrs, [:title, :description, :priority, :place, :deadline, :attachments])
+    |> validate_required([:title])
   end
 end
