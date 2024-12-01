@@ -5,6 +5,15 @@ defmodule KanbanWeb.GraphQL.Schema do
 
   object :card do
     field :id, non_null(:id)
+    field :title, non_null(:string)
+    field :description, :string
+    field :priority, :string
+  end
+
+  object :stage do
+    field :id, non_null(:id)
+    field :title, non_null(:string)
+    field :cards, non_null(list_of(:card))
   end
 
   query do
