@@ -47,5 +47,6 @@ defmodule KanbanWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug Corsica, origins: "*", allow_headers: ["content-type", "accept", "Access-Control-Allow-Origin"]
   plug KanbanWeb.Router
 end

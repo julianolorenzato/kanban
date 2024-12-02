@@ -46,7 +46,8 @@ defmodule Kanban.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:absinthe, "~> 1.7"},
-      {:absinthe_plug, "~> 1.5"}
+      {:absinthe_plug, "~> 1.5"},
+      {:corsica, "~> 2.1"}
     ]
   end
 

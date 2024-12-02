@@ -4,6 +4,7 @@ defmodule Kanban.Board do
   """
 
   import Ecto.Query, warn: false
+  alias Kanban.Board.Stage
   alias Kanban.Repo
 
   alias Kanban.Board.Card
@@ -13,12 +14,49 @@ defmodule Kanban.Board do
 
   ## Examples
 
-      iex> list_cards()
+      iex> list_cards(%{}, %{page: 0, page_size: 10})
       [%Card{}, ...]
 
   """
-  def list_cards do
-    Repo.all(Card)
+  def list_cards(filters, pagination) do
+    from(c in Card)
+    |> apply_search_filter(filters[:search])
+    |> apply_place_filter(filters[:place])
+    |> apply_priority_filter(filters[:priority])
+    |> apply_deadline_filter(filters[:deadline])
+    |> apply_pagination(pagination)
+    |> preload(:stage)
+    |> Repo.all()
+  end
+
+  defp apply_search_filter(query, nil), do: query
+
+  defp apply_search_filter(query, search) do
+    pattern = "%#{search}%"
+    from c in query, where: ilike(c.title, ^pattern) or ilike(c.description, ^pattern)
+  end
+
+  defp apply_deadline_filter(query, nil), do: query
+
+  defp apply_deadline_filter(query, deadline) do
+    from c in query, where: c.deadline == ^deadline
+  end
+
+  defp apply_place_filter(query, nil), do: query
+
+  defp apply_place_filter(query, place) do
+    pattern = "%#{place}%"
+    from c in query, where: ilike(c.place, ^pattern)
+  end
+
+  defp apply_priority_filter(query, nil), do: query
+
+  defp apply_priority_filter(query, priority) do
+    from c in query, where: c.priority == ^priority
+  end
+
+  defp apply_pagination(query, %{page: page, page_size: page_size}) do
+    from c in query, limit: ^page_size, offset: ^(page * page_size)
   end
 
   @doc """
@@ -35,7 +73,7 @@ defmodule Kanban.Board do
       ** (Ecto.NoResultsError)
 
   """
-  def get_card!(id), do: Repo.get!(Card, id)
+  def get_card!(id), do: Repo.get!(Card, id) |> Repo.preload(:stage)
 
   @doc """
   Creates a card.
